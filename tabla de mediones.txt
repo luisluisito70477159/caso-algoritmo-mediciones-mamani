@@ -1,0 +1,143 @@
+
+using System;
+using System.Diagnostics;
+using System.Collections.Generic;
+
+class Program
+{
+    // Algoritmo de búsqueda lineal
+    static int BusquedaLineal(int[] arreglo, int objetivo)
+    {
+        for (int i = 0; i < arreglo.Length; i++)
+        {
+            if (arreglo[i] == objetivo)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    // Realiza una corrida con varias búsquedas
+    static double MedirTiempo(int[] arreglo, int repeticiones)
+    {
+        int objetivo = arreglo[arreglo.Length - 1];
+        int resultado = -1;
+
+        Stopwatch reloj = Stopwatch.StartNew();
+
+        for (int i = 0; i < repeticiones; i++)
+        {
+            resultado = BusquedaLineal(arreglo, objetivo);
+        }
+
+        reloj.Stop();
+
+        // Evita que el resultado quede sin utilizar
+        if (resultado == -1)
+            Console.WriteLine("Elemento no encontrado.");
+
+        return reloj.Elapsed.TotalMilliseconds;
+    }
+
+    // Ejecuta calentamiento y cinco mediciones
+    static double EjecutarPrueba(string nombre, int n, int repeticiones)
+    {
+        int[] datos = new int[n];
+
+        for (int i = 0; i < n; i++)
+        {
+            datos[i] = i;
+        }
+
+        Console.WriteLine($"\n--- {nombre} ({n:N0} elementos) ---");
+
+        // Calentamiento (no se cuenta)
+        MedirTiempo(datos, repeticiones);
+        Console.WriteLine("Calentamiento realizado.");
+
+        List<double> tiempos = new List<double>();
+
+        // Cinco corridas
+        for (int i = 0; i < 5; i++)
+        {
+            double tiempo = MedirTiempo(datos, repeticiones);
+            tiempos.Add(tiempo);
+
+            Console.WriteLine(
+                $"Corrida {i + 1}: {tiempo:F3} ms");
+        }
+
+        double promedio = 0;
+
+        foreach (double tiempo in tiempos)
+        {
+            promedio += tiempo;
+        }
+
+        promedio /= tiempos.Count;
+
+        Console.WriteLine($"Promedio: {promedio:F3} ms");
+
+        return promedio;
+    }
+
+    static void Main()
+    {
+        // Tamaño inicial
+        int n = 100000;
+
+        // Repeticiones para que cada corrida dure varios ms
+        int repeticiones = 10;
+
+        Console.WriteLine("==================================");
+        Console.WriteLine("   TABLA DE MEDICIONES");
+        Console.WriteLine("   BUSQUEDA LINEAL EN C#");
+        Console.WriteLine("==================================");
+
+        double tiempoN =
+            EjecutarPrueba("n", n, repeticiones);
+
+        double tiempo4N =
+            EjecutarPrueba("4n", n * 4, repeticiones);
+
+        double tiempo16N =
+            EjecutarPrueba("16n", n * 16, repeticiones);
+
+        // Calcular ratios
+        double ratio4N = tiempo4N / tiempoN;
+        double ratio16N = tiempo16N / tiempo4N;
+        double ratioTotal = tiempo16N / tiempoN;
+
+        // Tabla final
+        Console.WriteLine("\n==================================");
+        Console.WriteLine("       TABLA COMPARATIVA");
+        Console.WriteLine("==================================");
+
+        Console.WriteLine(
+            "{0,-12} {1,-18} {2,-12}",
+            "Tamaño", "Promedio (ms)", "Ratio");
+
+        Console.WriteLine("----------------------------------");
+
+        Console.WriteLine(
+            "{0,-12} {1,-18:F3} {2,-12}",
+            "n", tiempoN, "-");
+
+        Console.WriteLine(
+            "{0,-12} {1,-18:F3} {2,-12:F2}",
+            "4n", tiempo4N, ratio4N);
+
+        Console.WriteLine(
+            "{0,-12} {1,-18:F3} {2,-12:F2}",
+            "16n", tiempo16N, ratio16N);
+
+        Console.WriteLine("----------------------------------");
+
+        Console.WriteLine(
+            $"Ratio 16n / n: {ratioTotal:F2}x");
+
+        Console.WriteLine("\nPrueba finalizada.");
+    }
+}

@@ -1,0 +1,5 @@
+Código	Operación	Complejidad Big O
+A	Acceder al primer elemento de una lista "constante"	O(1)
+B	Buscar un elemento recorriendo la lista	 "lineal" O(n)
+C	Recorrer una matriz con dos ciclos anidados "cuadratico"	O(n²)
+D	Búsqueda binaria mediante divisiones sucesivas "logarítmica"	O(log n)
