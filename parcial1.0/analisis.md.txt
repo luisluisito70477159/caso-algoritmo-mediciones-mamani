@@ -1,0 +1,80 @@
+// Luis Alberto Mamani lopez 
+// Parcial 1 
+using System;
+using System.Collections.Generic;
+
+namespace Parcial1.VarianteB;
+
+public static class Caja
+{
+    // MÉTODO ORIGINAL: solución lenta O(n²)
+    public static bool HayComprobantesRepetidosPorPares(int[] comprobantes)
+    {
+        for (int a = 0; a < comprobantes.Length; a++)
+        {
+            for (int b = a + 1; b < comprobantes.Length; b++)
+            {
+                if (comprobantes[a] == comprobantes[b])
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // MÉTODO MEJORADO: solución promedio O(n)
+   public static bool HayComprobantesRepetidosCurado(int[] comprobantes)
+{
+    HashSet<int> numeros = new HashSet<int>();
+
+    foreach (int numero in comprobantes)
+    {
+        if (numeros.Contains(numero))
+        {
+            return true;
+        }
+
+        numeros.Add(numero);
+    }
+
+    return false;
+}
+}
+
+public static class Programa
+{
+    private static readonly (int[] datos, bool esperado, string que)[] Casos =
+    {
+        (new[] { 1010, 1003, 1009, 1003, 1005 }, true, "repetido en el medio"),
+        (new[] { 1010, 1003, 1009, 1004, 1005 }, false, "sin repetidos"),
+        (new int[] { }, false, "lista vacía"),
+        (new[] { 1008 }, false, "un solo elemento"),
+        (new[] { 1004, 1001, 1002, 1006, 1004 }, true, "repetido en los extremos")
+    };
+
+    public static void Main()
+    {
+        Console.WriteLine("==========================================");
+        Console.WriteLine("   DETECCION DE COMPROBANTES REPETIDOS");
+        Console.WriteLine("==========================================");
+        Console.WriteLine();
+
+        foreach (var (datos, esperado, que) in Casos)
+        {
+            bool lenta = Caja.HayComprobantesRepetidosPorPares(datos);
+            bool curada = Caja.HayComprobantesRepetidosCurado(datos);
+
+            Console.WriteLine(que);
+            Console.WriteLine($"Resultado esperado: {esperado}");
+            Console.WriteLine($"Metodo lento:       {lenta}");
+            Console.WriteLine($"Metodo mejorado:    {curada}");
+            Console.WriteLine("------------------------------------------");
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("Pruebas finalizadas.");
+    }
+}
+
