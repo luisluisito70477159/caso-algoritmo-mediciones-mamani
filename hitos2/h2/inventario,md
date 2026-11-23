@@ -1,1 +1,28 @@
+# Inventario de operaciones – Kardex médico SEPSA
+//luis alberto mamani lopez
+## Caso
+El sistema de Kardex médico de SEPSA registra pacientes que pueden ser empleados, familiares de empleados u otros casos autorizados. Cada paciente tiene un **número de registro único** que sirve como clave para localizar su ficha.
+
+Para este hito se simula el manejo de registros de pacientes por su número de registro. No se mide la base de datos ni la interfaz web; se comparan estructuras de datos en memoria para resolver las mismas operaciones.
+
+## Datos
+- Clave: número de registro entero (único).
+- Ejemplos de claves: 1001, 1002, 1003, etc.
+- Cada clave representa un paciente. Para la prueba del algoritmo no es necesario cargar nombres ni datos médicos.
+
+## Operaciones del caso
+| Operación | ¿Qué representa en el Kardex? |
+|---|---|
+| Buscar por clave | Encontrar la ficha de un paciente por su número de registro. |
+| Insertar | Registrar un nuevo paciente con una clave que aún no exista. |
+| Borrar | Retirar de la colección de prueba un registro identificado por su clave. |
+| Obtener el menor | Consultar el paciente con el número de registro más bajo. |
+| Obtener el siguiente | Encontrar el registro con la clave inmediatamente mayor a una clave dada. |
+| Consultar rango | Obtener pacientes cuyas claves estén entre dos números. |
+| Recorrer en orden | Listar los pacientes ordenados por número de registro. |
+
+## Frecuencia estimada
+En el uso habitual del Kardex, **buscar por clave y recorrer/consultar registros** son operaciones frecuentes. Insertar y borrar ocurren cuando se registran o corrigen pacientes; consultar el menor, el siguiente y un rango son consultas puntuales.
+
+Para la comparación se ejecuta una mezcla fija de estas operaciones sobre ambas estructuras, con los mismos datos y el mismo número de repeticiones.
 
