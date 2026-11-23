@@ -1,1 +1,139 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+
+namespace H2CardexSEPSA;
+
+internal static class Program
+{
+    private const int Repeticiones = 3;
+    private const int Vueltas = 250;
+
+    static void Main()
+    {
+        int[] tamanos = { 1000, 2000, 4000, 8000 };
+
+        Console.WriteLine("H2 - Kardex médico SEPSA: List ingenua vs SortedSet");
+        Console.WriteLine("Promedio de 3 mediciones; calentamiento previo; ms.\n");
+        Console.WriteLine("n\tLista(ms)\tSortedSet(ms)\tLista x anterior\tSortedSet x anterior");
+
+        double anteriorLista = 0, anteriorArbol = 0;
+
+        foreach (int n in tamanos)
+        {
+            int[] datos = Enumerable.Range(1000, n).ToArray();
+            int[] consultas = Enumerable.Range(0, Vueltas)
+                .Select(i => datos[(i * 37) % n]).ToArray();
+
+            // Calentamiento, no se registra
+            EjecutarLista(datos, consultas);
+            EjecutarArbol(datos, consultas);
+
+            double lista = Promedio(() => EjecutarLista(datos, consultas));
+            double arbol = Promedio(() => EjecutarArbol(datos, consultas));
+
+            string factorLista = anteriorLista == 0 ? "-" : (lista / anteriorLista).ToString("F2");
+            string factorArbol = anteriorArbol == 0 ? "-" : (arbol / anteriorArbol).ToString("F2");
+
+            Console.WriteLine($"{n}\t{lista:F3}\t\t{arbol:F3}\t\t{factorLista}\t\t{factorArbol}");
+            anteriorLista = lista;
+            anteriorArbol = arbol;
+        }
+    }
+
+    static double Promedio(Action accion)
+    {
+        double suma = 0;
+        for (int i = 0; i < Repeticiones; i++)
+        {
+            var reloj = Stopwatch.StartNew();
+            accion();
+            reloj.Stop();
+            suma += reloj.Elapsed.TotalMilliseconds;
+        }
+        return suma / Repeticiones;
+    }
+
+    static void EjecutarLista(int[] datos, int[] consultas)
+    {
+        var lista = new List<int>(datos);
+        int suma = 0;
+
+        for (int vuelta = 0; vuelta < Vueltas; vuelta++)
+        {
+            int clave = consultas[vuelta];
+
+            // Buscar
+            bool existe = lista.Contains(clave);
+            suma += existe ? 1 : 0;
+
+            // Insertar y borrar una clave temporal (misma cantidad de acciones)
+            int temporal = 2_000_000 + vuelta;
+            lista.Add(temporal);
+            lista.Remove(temporal);
+
+            // Menor
+            int menor = lista.Min();
+            suma += menor;
+
+            // Siguiente clave mayor
+            int siguiente = lista.Where(x => x > clave).DefaultIfEmpty(-1).Min();
+            suma += siguiente;
+
+            // Rango: recolecta claves dentro del intervalo
+            int desde = 1000 + (vuelta % Math.Max(1, datos.Length / 2));
+            int hasta = desde + 100;
+            var rango = lista.Where(x => x >= desde && x <= hasta).ToArray();
+            foreach (int item in rango) suma += item & 1;
+
+            // Recorrido ordenado: la lista debe ordenar una copia
+            var ordenado = lista.OrderBy(x => x).ToArray();
+            foreach (int item in ordenado) suma += item & 1;
+        }
+
+        // Evita que el trabajo calculado quede sin utilizar.
+        if (suma == int.MinValue) Console.WriteLine(suma);
+    }
+
+    static void EjecutarArbol(int[] datos, int[] consultas)
+    {
+        var arbol = new SortedSet<int>(datos);
+        int suma = 0;
+
+        for (int vuelta = 0; vuelta < Vueltas; vuelta++)
+        {
+            int clave = consultas[vuelta];
+
+            // Buscar
+            bool existe = arbol.Contains(clave);
+            suma += existe ? 1 : 0;
+
+            // Insertar y borrar una clave temporal
+            int temporal = 2_000_000 + vuelta;
+            arbol.Add(temporal);
+            arbol.Remove(temporal);
+
+            // Menor
+            int menor = arbol.Min;
+            suma += menor;
+
+            // Siguiente clave mayor: tomar el primer elemento de una vista superior
+            int siguiente = arbol.GetViewBetween(clave + 1, int.MaxValue).Min;
+            suma += siguiente;
+
+            // Rango: vista ordenada entre límites
+            int desde = 1000 + (vuelta % Math.Max(1, datos.Length / 2));
+            int hasta = desde + 100;
+            var rango = arbol.GetViewBetween(desde, hasta);
+            suma += rango.Count;
+
+            // Recorrido en orden (el set ya mantiene el orden)
+            foreach (int item in arbol)
+                suma += item & 1;
+        }
+
+        if (suma == int.MinValue) Console.WriteLine(suma);
+    }
+}
 
