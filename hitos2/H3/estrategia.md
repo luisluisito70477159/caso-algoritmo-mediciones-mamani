@@ -1,31 +1,38 @@
+
 # H3 – Estrategia del caso Kardex SEPSA
 
-## Mi caso
+## 1. Mi caso
 
-Mi proyecto consiste en un Kardex de pacientes del consultorio médico de SEPSA, donde se pueden registrar pacientes y realizar operaciones como buscar, insertar, eliminar y consultar registros.
+Mi proyecto es un Kardex de pacientes del consultorio médico de SEPSA. Permite organizar los registros y realizar operaciones como buscar, insertar, eliminar y consultar pacientes usando una clave.
 
-## ¿Se puede aplicar una estrategia voraz?
+Estas operaciones principales son de administración de datos. No necesariamente requieren una estrategia voraz o programación dinámica.
 
-En las operaciones principales de mi Kardex no es necesario utilizar una estrategia voraz, porque estas operaciones se enfocan en organizar, buscar y administrar los registros de pacientes, y no en encontrar una solución óptima entre varias opciones.
+## 2. Problema relacionado que usaré en el H3
 
-Sin embargo, puedo aplicar una estrategia voraz a un problema relacionado con mi caso: seleccionar al paciente que debe ser atendido primero según su urgencia y hora de llegada.
+Para aplicar y comparar una estrategia, planteo un problema relacionado con la atención de pacientes: seleccionar al paciente que debe ser atendido primero según su urgencia y hora de llegada.
 
-## Estrategia voraz propuesta
+Las reglas son:
+- La urgencia 1 tiene mayor prioridad que la urgencia 2, 3, 4 o 5.
+- Si dos pacientes tienen la misma urgencia, se elige al que llegó primero.
 
-La estrategia consiste en seleccionar en cada paso al paciente con mayor prioridad. Se considera primero la urgencia más alta y, si dos pacientes tienen la misma urgencia, se elige al que llegó primero.
+Este ejemplo es una regla de selección para el ejercicio de algoritmos; no reemplaza el criterio médico real de triage.
 
-Esta elección permite obtener directamente al paciente que corresponde atender primero, sin necesidad de revisar todas las posibles ordenaciones de pacientes.
+## 3. ¿Por qué se puede aplicar una estrategia voraz?
 
-## ¿Por qué funciona?
+La estrategia voraz consiste en conservar en cada paso al mejor candidato encontrado hasta ese momento. Al revisar un paciente nuevo, lo comparo con el candidato actual. Si el nuevo tiene mayor prioridad (urgencia más alta o, en caso de empate, llegó antes), lo elijo como candidato. Si no, mantengo al anterior.
 
-La elección local consiste en seleccionar al paciente más urgente y, en caso de empate, al que llegó antes. Esta elección es la correcta para el primer paciente atendido, ya que ningún otro paciente tiene una prioridad superior.
+La elección local es segura porque, según la regla definida, un paciente que tiene prioridad sobre el candidato actual también tiene prioridad sobre los pacientes que ya fueron descartados. Por eso, al terminar de revisar la lista, el candidato que queda es el paciente que debe ser seleccionado primero.
 
-Después de seleccionar al paciente, queda un grupo más pequeño de pacientes pendientes, al cual se puede aplicar nuevamente la misma regla.
+## 4. ¿Qué problema más pequeño queda?
 
-## ¿Se aplica programación dinámica?
+Después de seleccionar al paciente prioritario, quedan los demás pacientes esperando. Se puede aplicar la misma regla al grupo restante para encontrar al siguiente prioritario.
 
-No es necesario aplicar programación dinámica a este problema, porque no se presentan subproblemas repetidos cuyos resultados debamos guardar y reutilizar. La selección se puede realizar mediante una comparación directa de los pacientes.
+Por tanto, la selección se repite sobre un conjunto más pequeño, manteniendo la misma regla de prioridad.
 
-## Conclusión
+## 5. ¿Por qué no uso programación dinámica?
 
-Mi Kardex no necesita directamente programación dinámica ni estrategia voraz para sus operaciones principales. Para el H3 utilizaré un problema relacionado con la atención de pacientes, donde una estrategia voraz permite encontrar al paciente prioritario de manera más eficiente que una solución por fuerza bruta.
+No aplico programación dinámica porque este problema no necesita resolver subproblemas repetidos ni guardar sus resultados para reutilizarlos. Basta con recorrer los pacientes y mantener al mejor candidato encontrado. La programación dinámica sería innecesaria para esta selección.
+
+## 6. Conclusión
+
+Las operaciones principales del Kardex SEPSA se enfocan en administrar registros y no requieren directamente una estrategia voraz o programación dinámica. Para el H3 usaré el problema relacionado de selección del paciente prioritario. En este caso, la estrategia voraz es apropiada porque la mejor elección local —seleccionar al paciente con mayor prioridad según las reglas— también es la elección correcta para obtener al paciente prioritario del conjunto completo. El grupo restante conserva el mismo problema de selección.
