@@ -189,24 +189,17 @@ class Program
     }
 }
 
-
-
-
 H3 - KARDEX MEDICO SEPSA
 Seleccion del paciente prioritario
 
 Pacientes | Fuerza Bruta ms | Factor | Voraz ms | Factor
+Verificacion 1000: ambos seleccionan al paciente 1, urgencia 1.
+1000 | 23.8678 | - | 0.0672 | -
+Verificacion 2000: ambos seleccionan al paciente 1, urgencia 1.
+2000 | 97.8030 | 4.10 | 0.0282 | 0.42
+Verificacion 4000: ambos seleccionan al paciente 1, urgencia 1.
+4000 | 346.4073 | 3.54 | 0.0573 | 2.03
+Verificacion 8000: ambos seleccionan al paciente 1, urgencia 1.
+8000 | 1572.0510 | 4.54 | 0.1127 | 1.97
 
-Verificacion 1000: ambos seleccionan ...
-1000 | ... | - | ... | -
 
-Verificacion 2000: ambos seleccionan ...
-2000 | ... | ... | ... | ...
-
-Verificacion 4000: ambos seleccionan ...
-4000 | ... | ... | ... | ...
-
-Verificacion 8000: ambos seleccionan ...
-8000 | ... | ... | ... | ...
-
-Pruebas finalizadas.
