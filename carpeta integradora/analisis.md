@@ -1,73 +1,67 @@
-//luis alberto mamani lopez
+//Luis Alberto Mamani lopez
 
-Nombre completo: Luis Alberto Mamani López
+# Evaluación integradora – Variante B
 
-# I1 — Analizar y elegir
+## Análisis del problema: Compras de una escuela
 
-## a) Costo de `CompradorIngenuo.Elegir`
+### 1\. Algoritmo ingenuo
 
-El costo de este algoritmo es **O(n · 2ⁿ)**, donde `n` es la cantidad de útiles.
+El método `CompradorIngenuo.Elegir` revisa todas las combinaciones posibles de artículos. Para n artículos existen 2^n subconjuntos. Para cada subconjunto recorre hasta n artículos para calcular su costo y utilidad.
 
-**Explicación:**
+Por ello, su complejidad temporal es **O(n · 2^n)**. El espacio adicional utilizado para recorrer las combinaciones es O(1), sin contar la lista que guarda los artículos elegidos.
 
-El programa prueba todas las combinaciones posibles de útiles, es decir, cuáles comprar y cuáles no. Como cada útil tiene dos opciones, se generan muchas combinaciones. Después, el programa revisa cada combinación para calcular cuánto cuesta y qué utilidad obtiene. Por eso, mientras aumenta la cantidad de útiles, el tiempo que tarda también aumenta bastante.
+### 2\. Recurrencia
 
-## b) Recurrencia y teorema maestro
+La recurrencia indicada es:
 
-El algoritmo va revisando cada útil y tiene dos opciones: comprarlo o no comprarlo. Por eso, su recurrencia es:
+T(n) = 2T(n − 1) + 1
 
-$$
-T(n) = 2T(n-1) + 1
-$$
+El teorema maestro clásico se aplica directamente a recurrencias de la forma T(n) = aT(n/b) + f(n). Aquí el tamaño del subproblema es n − 1, no n/b; por eso no corresponde aplicarlo directamente.
 
-El teorema maestro no se puede aplicar directamente, porque esta fórmula trabaja reduciendo el problema de uno en uno, y no dividiéndolo entre un número como la mitad.
+Desarrollando la recurrencia:
 
-Al desarrollar la recurrencia, se obtiene un crecimiento exponencial:
+* T(n) = 2T(n − 1) + 1
+* T(n) = 2\[2T(n − 2) + 1] + 1 = 4T(n − 2) + 3
+* Al continuar, T(n) = 2^n T(0) + (2^n − 1).
 
-$$
-T(n) = \Theta(2^n)
-$$
+Por tanto, su orden es **Θ(2^n)** para el modelo de recurrencia. En la implementación ingenua, además se examinan hasta n artículos por subconjunto, de modo que el costo total es **O(n · 2^n)**.
 
-Esto significa que, al aumentar la cantidad de útiles, el algoritmo puede tardar mucho más en terminar. Además, en el código original se revisa cada combinación para calcular su costo y utilidad, por eso su costo total es **O(n · 2ⁿ)**.
+### 3\. Estrategia voraz y contraejemplo
 
-## c) ¿Sirve un algoritmo voraz?
+No conviene elegir siempre el artículo con mayor utilidad por boliviano, porque esa decisión local no garantiza la mejor combinación global.
 
-No siempre. El algoritmo voraz elige primero los útiles que parecen dar mayor utilidad por cada boliviano gastado, pero eso no significa que siempre encuentre la mejor combinación.
+En el primer caso:
 
-En el primer caso de prueba tenemos:
+* U1: costo Bs 20, utilidad 120, razón 6.
+* U2: costo Bs 40, utilidad 200, razón 5.
+* U3: costo Bs 60, utilidad 240, razón 4.
+* Presupuesto: Bs 100.
 
-| Útil | Costo (Bs) | Utilidad | Utilidad/costo |
-|------|------------:|---------:|---------------:|
-| U1   | 20          | 120      | 6              |
-| U2   | 40          | 200      | 5              |
-| U3   | 60          | 240      | 4              |
+La estrategia voraz por razón elige U1 y U2, con costo Bs 60 y utilidad 320. Sin embargo, U2 y U3 cuestan Bs 100 y producen utilidad 440. Por tanto, la elección voraz no es óptima.
 
-**Presupuesto: 100 Bs.**
+La estrategia utilizada es **programación dinámica para el problema de la mochila 0/1**. Se calcula la mejor utilidad posible considerando los primeros i artículos y cada presupuesto p. Así se reutilizan resultados de subproblemas.
 
-El método voraz elegiría primero U1 y después U2, porque tienen mayor utilidad por su costo. Gastaría 60 Bs y conseguiría una utilidad de 320. Ya no podría comprar U3 porque se pasaría del presupuesto.
+### 4\. Complejidad del algoritmo mejorado
 
-Pero si se eligen U2 y U3, se gastan exactamente 100 Bs y se consigue una utilidad de 440, que es mayor.
+La tabla tiene (n + 1) filas y (P + 1) columnas, donde P es el presupuesto en bolivianos. Cada celda se calcula en tiempo constante.
 
-Por eso, el método voraz no siempre encuentra la mejor solución.
+* Tiempo: **O(n · P)**.
+* Espacio: **O(n · P)**.
+* La reconstrucción de los artículos elegidos recorre las filas en O(n).
 
-**Estrategia elegida: programación dinámica.**
+Esta complejidad es pseudo-polinomial, porque depende del valor numérico del presupuesto, no solamente de la cantidad de artículos.
 
-Elegí la programación dinámica porque permite ir guardando los mejores resultados que se van obteniendo, en lugar de probar todas las combinaciones desde el principio.
+### 5\. Estructura para consultar artículos elegidos
 
-El programa revisa cada útil y compara si conviene comprarlo o dejarlo, tomando en cuenta el presupuesto disponible. De esta manera, puede encontrar la combinación que dé mayor utilidad sin repetir tantos cálculos.
+`CompradorMejorado` utiliza `HashSet<string>` para almacenar los códigos seleccionados. La búsqueda mediante `EstaEnLaCompra` tiene costo promedio **O(1)**. Si se utilizara una lista, la búsqueda sería O(n) en el peor caso.
 
-Su costo depende de la cantidad de útiles y del presupuesto:
+### 6\. Presupuesto de Bs 1.000.000.000
 
-- **Tiempo:** O(n · P).
-- **Espacio:** O(n · P).
+Con un presupuesto de mil millones de bolivianos, una tabla de programación dinámica por presupuesto sería impracticable. Por ejemplo, con 1000 artículos se necesitarían aproximadamente 1001 × 1.000.000.001 celdas. Usando enteros de 4 bytes, esto representa alrededor de 4 TB, sin contar sobrecargas.
 
-Esta estrategia permite resolver el problema de una manera más rápida que el método original, especialmente cuando hay muchos útiles.
+Para presupuestos tan grandes se debería considerar otra estrategia, como programación dinámica con estados dispersos, una formulación por valores cuando corresponda o algoritmos aproximados, según las restricciones del problema.
 
-## d) Estructura para `EstaEnLaCompra`
+### 7\. Conclusión
 
-Para esta parte usaría un `HashSet<string>`, porque permite guardar los códigos de los útiles que ya fueron seleccionados y comprobar fácilmente si uno está en la compra.
-
-Con `Contains(codigo)` puedo verificar si un útil está dentro de la compra sin tener que recorrer toda una lista uno por uno.
-
-Esto es más conveniente cuando se realizan muchas consultas, porque la búsqueda normalmente es más rápida que usando una lista.
+La fuerza bruta encuentra la solución exacta, pero su crecimiento exponencial la vuelve lenta al aumentar los artículos. La programación dinámica evita recalcular subproblemas y mejora considerablemente el rendimiento para presupuestos moderados. El `HashSet` también permite consultar rápidamente si un código pertenece a la compra.
 
